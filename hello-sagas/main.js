@@ -4,29 +4,32 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { createStore, applyMiddleware } from 'redux'
 
-import Counter from './Counter'
+import Greeting from './Greeting'
 import reducer from './reducers'
 
 import createSagaMiddleware from 'redux-saga'
-import  mySaga from "./sagas";
+import mySaga from "./sagas";
 
 const sagaMiddleware = createSagaMiddleware()
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const store = createStore(
-	reducer,
-	applyMiddleware(sagaMiddleware)
+    reducer,
+    composeEnhancers(
+        applyMiddleware(sagaMiddleware))
 )
 
 sagaMiddleware.run(mySaga)
 
-const action = type => store.dispatch({type})
+const action = (type, msg) => store.dispatch({type, msg})
 
 function render() {
   ReactDOM.render(
-    <Counter
+    <Greeting
       value={store.getState()}
-      onIncrement={() => action('INCREMENT')}
-      onDecrement={() => action('DECREMENT')} />,
+      onSayHello={() => action('SAY_HELLO', "Hello!")}
+      onSayGoodbye={() => action('SAY_GOODBYE', "Good bye!")} />,
     document.getElementById('root')
   )
 }
